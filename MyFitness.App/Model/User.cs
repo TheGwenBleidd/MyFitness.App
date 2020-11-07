@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyFitness.App.Model
 {
+    [Serializable]
     public class User
     {
         /// <summary>

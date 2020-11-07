@@ -10,6 +10,8 @@ namespace MyFItness.CMD
     {
         static void Main(string[] args)
         {
+
+
         }
     }
 }
