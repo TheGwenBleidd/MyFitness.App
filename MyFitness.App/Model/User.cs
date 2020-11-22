@@ -53,38 +53,6 @@ namespace MyFitness.App.Model
                     int height)
         {
             
-            #region Check
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException("Name cannot be empty enter again", nameof(name));
-            }
-
-            if(age == 0) 
-            {
-                throw new ArgumentException("Age cannot be 0 , enter again", nameof(age));
-            }
-
-            if(gender == null) 
-            {
-                throw new ArgumentNullException("Gender cannot be null, enter again", nameof(gender));
-            }
-
-            if(birthday < DateTime.Parse("01.01.1910") && birthday >= DateTime.Now ) 
-            {
-                throw new ArgumentException("Birthday cannot be empty , enter again", nameof(birthday));
-            }
-
-            if(weight <= 0) 
-            {
-                throw new ArgumentException("Weight cannot be 0 , enter again" ,nameof(weight));
-            }
-
-            if(height <= 0) 
-            {
-                throw new ArgumentException("Height cannot be 0 , enter again", nameof(height));
-            }
-            #endregion
-            
             Name = name;
             Age = age;
             Gender = gender;
