@@ -12,73 +12,102 @@ namespace MyFitness.App.Controller
     /// <summary>
     /// Контроллер пользователя.
     /// </summary>
-    public  class UserController
+    public class UserController
     {
-        public User User { get; set; }
+        /// <summary>
+        /// Всех юзеров сохранеям в списке.
+        /// </summary>
+        public List<User> Users { get;}
 
-        public UserController(string userName , int age ,string genderName , DateTime birthDay , decimal weight , int height )
+        /// <summary>
+        /// Флаг для обозначения пользователь новый или уже есть в системе.
+        /// </summary>
+        public bool IsNewUser { get;} = false;
+
+        /// <summary>
+        /// Активный пользователь , это нужно для того чтобы если юзер уже есть в системе то к нему присоединяемся , а если в списке нет то тогда создаем нового.
+        /// </summary>
+        public User CurrentUser {get;}
+
+        public UserController(string userName)
         {
-            #region Checking
-            if(userName == null)
+            
+            if (userName == null)
             {
                 throw new ArgumentNullException("Name cannot be null, enter again", nameof(userName));
             }
 
-            if (age == 0)
-            {
-                throw new ArgumentException("Age cannot be 0 , enter again", nameof(age));
-            }
+            /// <summary>
+            /// В список добавлеяем всеx сериализованных пользователей.
+            /// </summary>
+            Users = GetUsers();
 
-            if (genderName == null)
+            /// <summary>
+            /// Здесь ишем пользователя если его нет в списке то создается новый пользователь.
+            /// </summary>лей
+            CurrentUser = Users.SingleOrDefault(u => u.Name == userName);
+            if (CurrentUser == null)
             {
-                throw new ArgumentNullException("Gender cannot be null, enter again", nameof(genderName));
+                CurrentUser = new User(userName);
+                Users.Add(CurrentUser);
+                IsNewUser = true;
+                Save();
             }
-
-            if (birthDay < DateTime.Parse("01.01.1910") && birthDay >= DateTime.Now)
-            {
-                throw new ArgumentException("Birthday cannot be empty , enter again", nameof(birthDay));
-            }
-
-            if (weight <= 0)
-            {
-                throw new ArgumentException("Weight cannot be 0 , enter again", nameof(weight));
-            }
-
-            if (height <= 0)
-            {
-                throw new ArgumentException("Height cannot be 0 , enter again", nameof(height));
-            }
-            #endregion 
-
-            var gender = new Gender(genderName);
-            User = new User(userName , age , gender , birthDay , weight , height );
-        
+            
         }
+
+
+        public void SetNewUserData( string gender , DateTime birthday ,decimal weight = 1  , int height = 1)
+        {
+            if (string.IsNullOrWhiteSpace(gender))
+            {
+                throw new ArgumentNullException("Gender is empty , enter again");
+            }
+
+            if(birthday > DateTime.Parse("01.01.1900") && birthday == DateTime.Now)
+            {
+                throw new ArgumentException("Birthdate is wrong , enter again");
+            }
+
+            CurrentUser.Gender = new Gender(gender);
+            CurrentUser.BirthDay = birthday;
+            CurrentUser.Weight = weight;
+            CurrentUser.Height = height;
+            Save();
+        }
+
         /// <summary>
         /// Метод который сэйвит юзеров в отдельный файл.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>void</returns>
         public void Save()
         {
             var formatter = new BinaryFormatter();
             using (var fs = new FileStream("users.dat", FileMode.OpenOrCreate))
             {
-                formatter.Serialize(fs, User);
+                formatter.Serialize(fs, Users);
             }
         }
 
-
         /// <summary>
-        /// Метод который позволяет получать данные об пользователе.
+        /// Метод который позволяет получать список пользователей.
         /// </summary>
-        /// <returns></returns>
-        public User Load()
+        /// <returns>User</returns>
+        private List<User> GetUsers()
         {
             var formatter = new BinaryFormatter();
             using (var fs = new FileStream("users.dat", FileMode.OpenOrCreate))
             {
-                 return formatter.Deserialize(fs) as User;  
+                 if(formatter.Deserialize(fs) is List<User> users)
+                 {
+                    return users;
+                 }
+                else 
+                {
+                    return new List<User>();
+                }
             }
+            
         }
     }
 }

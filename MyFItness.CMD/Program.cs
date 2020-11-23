@@ -15,48 +15,93 @@ namespace MyFItness.CMD
             Console.WriteLine("Welcome , this is MyFitnessApp");
             Console.WriteLine("Enter your name");
             string name = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(name))
+          
+            var userController = new UserController(name);
+            if (userController.IsNewUser)
             {
-                throw new ArgumentNullException("User name cannot be empty");
+                Console.WriteLine("Enter your gender , please");
+                var gender = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(gender))
+                {
+                    throw new ArgumentException("Enter your gender again");
+                }
+                DateTime birthday = DateTimeParse();
+                decimal weight = DecimalParse();
+                int height = IntParse();
+
+                userController.SetNewUserData(gender, birthday, weight, height);
             }
 
-            Console.WriteLine("Enter your age");
-            int age = Convert.ToInt32(Console.ReadLine());
-            if(age == 0)
-            {
-                throw new ArgumentException("Age cannot be 0 ");
-            }
 
-            Console.WriteLine("Enter your gender");
-            var gender = Console.ReadLine();
-            if (gender == null)
-            {
-                throw new ArgumentNullException("User's gender cannot be empty");
-            }
-
-            Console.WriteLine("Enter your birthDay ");
-            var birthDay = DateTime.Parse(Console.ReadLine());
-            if (birthDay < DateTime.Parse("01.01.1910") && birthDay >= DateTime.Now)
-            {
-                throw new ArgumentException("Birthday cannot be empty , enter again", nameof(birthDay));
-            }
-
-            Console.WriteLine("Enter your weight");
-            var weight = decimal.Parse(Console.ReadLine());
-            if(weight == 0)
-            {
-                throw new ArgumentException("Weight cannot be 0 ");
-            }
-
-            Console.WriteLine("Enter your height");
-            var height = int.Parse(Console.ReadLine());
-            if(height == 0) 
-            {
-                throw new ArgumentException("Height cannot be 0 ");
-            }
-
-            var userController = new UserController(name, age, gender, birthDay, weight, height);
-            userController.Save();
+            Console.WriteLine(userController.CurrentUser );
+            Console.ReadLine();
         }
+
+        private static int IntParse()
+        {
+            int height;
+            while (true)
+            {
+                Console.WriteLine("Enter your height , please");
+                if (int.TryParse(Console.ReadLine(), out height))
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Error , enter your height again");
+                    Console.ReadLine();
+                    Console.Clear();
+                }
+            }
+
+            return height;
+        }
+
+        private static decimal DecimalParse()
+        {
+            decimal weight;
+            while (true)
+            {
+                Console.WriteLine("Enter your weight , please");
+                if (decimal.TryParse(Console.ReadLine(), out weight))
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Error , enter your weight again");
+                    Console.ReadLine();
+                    Console.Clear();
+                }
+            }
+
+            return weight;
+        }
+
+        private static DateTime DateTimeParse()
+        {
+            DateTime birthday;
+            while (true)
+            {
+                Console.WriteLine("Enter your birthday(DD.MM.YYYY), please");
+                if (DateTime.TryParse(Console.ReadLine(), out birthday))
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Wrong format of birthday , enter again");
+                    Console.ReadLine();
+                    Console.Clear();
+                }
+            }
+
+            return birthday;
+        }
+
+
+
+
     }
 }
