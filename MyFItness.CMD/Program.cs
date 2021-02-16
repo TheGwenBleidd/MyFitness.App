@@ -12,11 +12,16 @@ namespace MyFItness.CMD
     {
         static void Main(string[] args)
         {
+            ///Здесь начинается приложение
             Console.WriteLine("Welcome , this is MyFitnessApp");
             Console.WriteLine("Enter your name");
             string name = Console.ReadLine();
           
             var userController = new UserController(name);
+            var eatingController = new EatingController(userController.CurrentUser);
+            ///Создается новый пользователь , если юзер есть в системе то выводится его имя и возраст
+            ///А если нет после имени требуется ввести свой пол и т.д
+            ///
             if (userController.IsNewUser)
             {
                 Console.WriteLine("Enter your gender , please");
@@ -26,15 +31,49 @@ namespace MyFItness.CMD
                     throw new ArgumentException("Enter your gender again");
                 }
                 DateTime birthday = DateTimeParse();
-                decimal weight = DecimalParse();
+                decimal weight = DecimalParse("weight");
                 int height = IntParse();
-
+                ///Метод который добавляет новую информацию пользователя
                 userController.SetNewUserData(gender, birthday, weight, height);
             }
 
+            Console.WriteLine(userController.CurrentUser);
 
-            Console.WriteLine(userController.CurrentUser );
+            Console.WriteLine("What do you want?");
+            Console.WriteLine("Button 'E' - enter the ingestion");
+            var key = Console.ReadKey();
+            Console.WriteLine();
+
+            if(key.Key == ConsoleKey.E)
+            {
+                var foods = EnterEating();
+                eatingController.Add(foods.food, foods.weight);
+                
+                foreach(var item in eatingController.Eating.Foods)
+                {
+                    Console.WriteLine($"\t{item.Key} - {item.Value}");
+                }
+            }
+
+
             Console.ReadLine();
+        }
+
+        private static (Food food, decimal weight) EnterEating()
+        {
+            Console.WriteLine("Enter the name of product: ");
+            var food = Console.ReadLine();
+
+            var calories = DecimalParse("Calories");
+            var proteins = DecimalParse("Proteins");
+            var fats = DecimalParse("Fats");
+            var carbohydrates = DecimalParse("Carbohydrates");
+
+
+            var weight = DecimalParse("Weight");
+            var product = new Food(food, calories, proteins, fats, carbohydrates);
+
+            return (Food: product, Weight: weight);
         }
 
         private static int IntParse()
@@ -58,19 +97,19 @@ namespace MyFItness.CMD
             return height;
         }
 
-        private static decimal DecimalParse()
+        private static decimal DecimalParse(string name)
         {
             decimal weight;
             while (true)
             {
-                Console.WriteLine("Enter your weight , please");
+                Console.WriteLine($"Enter your {name} , please");
                 if (decimal.TryParse(Console.ReadLine(), out weight))
                 {
                     break;
                 }
                 else
                 {
-                    Console.WriteLine("Error , enter your weight again");
+                    Console.WriteLine($"Error , enter your {name} again");
                     Console.ReadLine();
                     Console.Clear();
                 }

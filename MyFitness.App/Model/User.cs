@@ -72,8 +72,6 @@ namespace MyFitness.App.Model
                 throw new ArgumentNullException("Name cannot be empty");
             }
 
-            
-
             if(gender == null)
             {
                 throw new ArgumentNullException("Gender cannot be empty");
